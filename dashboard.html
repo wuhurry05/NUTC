@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧節衣櫃</title>
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+        .header {
+            background-color: #87CEEB;
+            color: white;
+            padding: 10px;
+            text-align: right;
+        }
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: calc(100% - 50px);
+            background-color: #f0f0f0;
+        }
+        .welcome-message {
+            font-size: 24px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .username {
+            color: #4CAF50;
+            font-weight: bold;
+        }
+        .user-info {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        .user-info h2 {
+            margin-top: 0;
+        }
+        .user-info table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .user-info td {
+            padding: 8px;
+            border-bottom: 1px solid #ddd;
+        }
+        .edit-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .edit-form input {
+            margin-bottom: 10px;
+            padding: 5px;
+            width: 200px;
+        }
+        .edit-form button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <span>首頁</span>
+        <span>天氣資訊</span>
+        <span>搭配建議</span>
+        <span>登出</span>
+    </div>
+    <div class="content">
+        <div class="welcome-message">
+            ! 歡迎使用智慧節衣櫃 !<br>
+            <span id="username-display" class="username"></span>
+        </div>
+        <div class="user-info">
+            <h2>會員資料</h2>
+            <table id="user-info-table">
+                <tr><td>使用者姓名</td><td id="user-name"></td></tr>
+                <tr><td>帳號</td><td id="user-age"></td></tr>
+                <tr><td>密碼</td><td id="user-gender"></td></tr>
+            </table>
+        </div>
+        <div class="edit-form">
+            <h2>修改資料</h2>
+            <input type="text" id="edit-name" placeholder="使用者姓名"><br>
+            <input type="text" id="edit-age" placeholder="帳號"><br>
+            <input type="text" id="edit-gender" placeholder="密碼"><br>
+            <button onclick="updateUserInfo()">更新資料</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                document.getElementById('username-display').textContent = username;
+                loadUserInfo();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        document.querySelector('.header span:last-child').addEventListener('click', function() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('userInfo');
+            window.location.href = 'login.html';
+        });
+
+        function loadUserInfo() {
+            const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {};
+            document.getElementById('user-name').textContent = userInfo.name || '';
+            document.getElementById('user-age').textContent = userInfo.age || '';
+            document.getElementById('user-gender').textContent = userInfo.gender || '';
+        }
+
+        function updateUserInfo() {
+            const userInfo = {
+                name: document.getElementById('edit-name').value,
+                age: document.getElementById('edit-age').value,
+                gender: document.getElementById('edit-gender').value,
+            };
+            localStorage.setItem('userInfo', JSON.stringify(userInfo));
+            loadUserInfo();
+            alert('會員資料已更新');
+        }
+    </script>
+</body>
+</html>

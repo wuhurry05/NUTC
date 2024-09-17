@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登入 / 註冊</title>
+    <style>
+        /* 保留原有的樣式 */
+        body, html {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .login-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            width: 300px;
+            max-width: 90%;
+        }
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #007B9A;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            max-width: 90%;
+            border-radius: 5px;
+            max-height: 90%;
+            overflow-y: auto;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .password-container {
+            position: relative;
+        }
+        .password-container input {
+            padding-right: 35px;
+        }
+        .password-toggle {
+            position: absolute;
+            right: 5px;
+            top: 25%;
+            transform: translateY(-50%);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .password-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: black;
+        }
+        /* 用於忘記密碼顯示/隱藏圖示 */
+    .fogot-password-toggle {
+        position: absolute;
+            right: 5px;
+            top: 25%;
+            transform: translateY(-50%);
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .fogot-password-toggle svg {
+            width: 20px;
+            height: 20px;
+            stroke: black;
+        }
+        .message {
+            text-align: center;
+            margin-top: 10px;
+            color: #333;
+        }
+        .error {
+            color: red;
+        }
+        .success {
+            color: green;
+        }
+        .message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.message.error {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+.message.success {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-box">
+            <h2>登入 / 註冊</h2>
+            <form id="login-form">
+                <div class="form-group">
+                    <label for="login-account">帳號</label>
+                    <input type="text" id="login-account" required>
+                </div>
+                <div class="form-group">
+                    <label for="login-password">密碼</label>
+                    <div class="password-container">
+                        <input type="password" id="login-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('login-password', 'login-toggle')">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <button type="submit">登入</button>
+            </form>
+            <button id="register-btn">註冊</button>
+            <button id="forgot-password-btn">忘記密碼?</button>
+            <div id="login-message" class="message"></div>
+        </div>
+    </div>
+
+    <!-- 註冊模態框 -->
+    <div id="register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>註冊</h2>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-username">使用者姓名</label>
+                    <input type="text" id="register-username" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-account">帳號</label>
+                    <input type="text" id="register-account" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">密碼</label>
+                    <div class="password-container">
+                        <input type="password" id="register-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-password', 'register-toggle')">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">確認密碼</label>
+                    <div class="password-container">
+                        <input type="password" id="register-confirm-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('register-confirm-password', 'register-toggle')">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                <line x1="1" y1="1" x2="23" y2="23"></line>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="register-phone">電話</label>
+                    <input type="tel" id="register-phone" pattern="^(09\d{8}|0\d{1,2}-\d{7})$" placeholder="例如：0912345678 或 02-12345678" required>
+                </div>
+                <div class="form-group">
+                    <label for="register-mail">電子郵件</label>
+                    <input type="email" id="register-mail" required>
+                </div>
+                <button type="submit">註冊</button>
+            </form>
+            <div id="register-message" class="message"></div>
+        </div> 
+    </div>
+
+
+<!-- 忘記密碼模態框 -->
+<div id="forgot-password-modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>忘記密碼</h2>
+      <form id="forgot-password-form"></form>
+      <div class="form-group">
+        <label for="reset-email">註冊時的帳號</label>
+        <input type="text" id="reset-username" placeholder="請輸入欲更改的帳號">
+      </div>
+      <div class="form-group">
+        <label for="reset-email">註冊時的電子郵件</label>
+        <input type="email" id="reset-email" placeholder="請輸入註冊時的電子郵件">
+      </div>
+      <button id="send-verification-code">發送驗證碼</button>
+      <div id="forgot-message" class="message"></div>
+      <div id="verification-code-section" style="display: none;">
+        <div class="form-group">
+          <label for="reset-verification-code">驗證碼</label>
+          <input type="text" id="reset-verification-code" required>
+        </div>
+        <div class="form-group">
+          <label for="reset-new-password">新密碼</label>
+          <div class="password-container">
+            <input type="password" id="reset-new-password" required>
+            <button type="button" class="fogot-password-toggle" onclick="togglePassword('reset-new-password', 'fogot-new-toggle')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="5" y1="5" x2="20" y2="20"></line>
+                </svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="reset-confirm-password">確認新密碼</label>
+          <div class="password-container">
+            <input type="password" id="reset-confirm-password" required>
+            <button type="button" class="fogot-password-toggle" onclick="togglePassword('reset-confirm-password', 'fogot-new-toggle')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="15" y2="15"></line>
+                </svg>
+            </button>
+          </div>
+        </div>
+        <button id="reset-password-button">重置密碼</button>
+        <div id="reset-password-message" class="message"></div>
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+    // 密碼顯示/隱藏切換
+    function togglePassword(inputId, button) {
+        const passwordInput = document.getElementById(inputId);
+
+        if (!passwordInput) {
+            console.error(`No input element found with id ${inputId}`);
+            return;
+        }
+
+        if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            button.innerHTML = `
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+            `;
+        } else {
+            passwordInput.type = "password";
+            button.innerHTML = `
+                <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.37a3 3 0 0 0 2.76-2.77"></path>
+            `;
+        }
+    }
+// 顯示忘記密碼模態框
+document.getElementById("forgot-password-btn").onclick = function() {
+    document.getElementById("forgot-password-modal").style.display = "block";
+};
+
+
+    // 關閉模態框
+    function closeRegisterModal() {
+        document.getElementById("register-modal").style.display = "none";
+        document.getElementById("register-form").reset(); // 清空表單
+        document.getElementById("register-message").textContent = ''; // 清空訊息
+    }
+
+    function closeForgotPasswordModal() {
+        document.getElementById("forgot-password-modal").style.display = "none";
+        document.getElementById("forgot-password-modal").querySelector('form').reset(); // 清空表單
+        document.getElementById("forgot-message").textContent = ''; // 清空訊息
+        document.getElementById('verification-code-section').style.display = 'none'; // 隱藏驗證碼區塊
+    }
+
+    function showResetPasswordMessage(message, type) {
+    const messageElement = document.getElementById('reset-password-message');
+    if (messageElement) {
+        messageElement.textContent = message;
+        messageElement.className = 'message ' + type;
+    } else {
+        console.error("Message element not found");
+    }
+}
+
+    // 發送驗證碼
+    function sendVerificationCode() {
+        const email = document.getElementById("forgot-email").value;
+        fetch('send_verification_code.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                document.getElementById('verification-code-section').style.display = 'block'; // 顯示驗證碼區塊
+                document.getElementById('forgot-message').textContent = "驗證碼已發送到您的郵箱";
+                document.getElementById('forgot-message').className = "message success";
+            } else {
+                document.getElementById('forgot-message').textContent = "發送驗證碼失敗：" + data.message;
+                document.getElementById('forgot-message').className = "message error";
+            }
+        })
+        .catch(error => {
+            document.getElementById('forgot-message').textContent = "發送驗證碼時發生錯誤，請稍後再試。";
+            document.getElementById('forgot-message').className = "message error";
+            console.error('Error:', error);
+        });
+    }
+
+    // 重置密碼
+    function resetPassword() {
+    console.log("resetPassword function called");
+
+    const email = document.getElementById('reset-email').value;
+    const verificationCode = document.getElementById('reset-verification-code').value;
+    const newPassword = document.getElementById('reset-new-password').value;
+    const confirmPassword = document.getElementById('reset-confirm-password').value;
+
+    if (!email || !verificationCode || !newPassword || !confirmPassword) {
+        showResetPasswordMessage("請填寫所有必填欄位", 'error');
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        showResetPasswordMessage("新密碼和確認密碼不匹配", 'error');
+        return;
+    }
+
+    // Log the data being sent (remove in production)
+    console.log("Sending reset password request with data:", {
+        email: email,
+        verificationCode: verificationCode,
+        newPassword: newPassword
+    });
+
+    fetch('reset_password.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            email: email,
+            verificationCode: verificationCode,
+            newPassword: newPassword
+        }),
+    })
+    .then(response => {
+        console.log("Raw response:", response);
+        return response.json();
+    })
+    .then(data => {
+        console.log("Parsed response data:", data);
+        if (data.success) {
+            showResetPasswordMessage(data.message, 'success');
+            // Optionally close the modal or redirect after successful password reset
+        } else {
+            showResetPasswordMessage(data.message, 'error');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showResetPasswordMessage("重置密碼時發生錯誤，請稍後再試", 'error');
+    });
+}
+
+    // 登入表單提交
+    document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById("login-form").addEventListener("submit", function(e) {
+                e.preventDefault();
+                const account = document.getElementById("login-account").value;
+                const password = document.getElementById("login-password").value;
+
+                fetch('login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ account, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const loginMessage = document.getElementById('login-message');
+                    if (data.success) {
+                        loginMessage.textContent = data.message;
+                        loginMessage.className = "message success";
+                        localStorage.setItem('username', data.username); // 儲存使用者名稱
+                        window.location.href = data.redirect;
+                    } else {
+                        loginMessage.textContent = "登入失敗：" + data.message;
+                        loginMessage.className = "message error";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('login-message').textContent = '登入過程中發生錯誤';
+                });
+            });
+        });
+
+
+
+    
+
+    // 註冊表單提交
+    document.getElementById("register-form").addEventListener("submit", function(e) {
+        e.preventDefault();
+        const username = document.getElementById("register-username").value;
+        const account = document.getElementById("register-account").value;
+        const password = document.getElementById("register-password").value;
+        const confirmPassword = document.getElementById("register-confirm-password").value;
+        const birthday = document.getElementById("register-birthday").value;
+        const phone = document.getElementById("register-phone").value;
+        const email = document.getElementById("register-mail").value;
+
+        if (password !== confirmPassword) {
+            document.getElementById("register-message").textContent = "密碼和確認密碼不匹配";
+            document.getElementById("register-message").className = "message error";
+            return;
+        }
+
+        fetch('register.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, account, password, birthday, phone, email }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById("register-message").textContent = data.message;
+            document.getElementById("register-message").className = data.success ? "message success" : "message error";
+            if (data.success) {
+                document.getElementById("register-form").reset(); // 清空表單
+            }
+        })
+        /*.catch(error => {
+            document.getElementById("register-message").textContent = "註冊時發生錯誤，請稍後再試。";
+            document.getElementById("register-message").className = "message error";
+            console.error('Error:', error);
+        });*/
+    });
+
+    // 註冊模態框顯示
+    document.getElementById("register-btn").onclick = function() {
+        document.getElementById("register-modal").style.display = "block";
+    };
+
+    // 點擊外部區域關閉模態框
+    window.onclick = function(event) {
+        if (event.target == document.getElementById("register-modal")) {
+            closeRegisterModal();
+        } else if (event.target == document.getElementById("forgot-password-modal")) {
+            closeForgotPasswordModal();
+        }
+    };
+
+    // 關閉註冊模態框
+    document.querySelector("#register-modal .close").onclick = closeRegisterModal;
+
+    // 關閉忘記密碼模態框
+    document.querySelector("#forgot-password-modal .close").onclick = closeForgotPasswordModal;
+
+    
+</script>
+echo json_encode(["success" => true, "message" => "Password reset successful"]);
+
+<script src="forgot-password.js"></script>
+<script src="reset-password.js" defer></script>
+</body>
+</html>

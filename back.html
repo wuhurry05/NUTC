@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智慧晾衣網</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #sidebar {
+            background-color: #34495e;
+            color: white;
+            width: 250px;
+            height: 100%;
+            transition: 0.3s;
+            overflow-x: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        #sidebar.collapsed {
+            width: 55px; /* 收合時更窄 */
+        }
+
+        #sidebar .logo {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            background-color: #2c3e50;
+        }
+
+        #sidebar .logo img {
+            width: 30px;
+            margin-right: 10px;
+        }
+
+        #sidebar .logo h1 {
+            margin: 0;
+            font-size: 18px;
+            white-space: nowrap;
+        }
+
+        #sidebar nav {
+            padding: 10px 0;
+        }
+
+        #sidebar .nav-link {
+            color: #b8c7ce;
+            text-decoration: none;
+            padding: 12px 20px;
+            display: flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+
+        #sidebar .nav-link:hover, #sidebar .nav-link.active {
+            background-color: #2c3e50;
+            color: white;
+        }
+
+        #sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        #sidebar.collapsed .nav-link span {
+            display: none;
+        }
+
+        #content {
+            flex-grow: 1;
+            padding: 20px;
+            transition: 0.3s;
+            margin-left: 250px;
+        }
+
+        #toggle-sidebar {
+            background: none;
+            border: none;
+            color: #34495e;
+            font-size: 24px;
+            cursor: pointer;
+            position: fixed;
+            top: 20px;
+            left: 270px; /* 略大於側邊欄寬度 */
+            z-index: 1001;
+        }
+
+        #user-name {
+            text-align: right;
+            padding: 20px;
+            background-color: #f1f1f1;
+            border-bottom: 1px solid #ddd;
+        }
+
+        main {
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #333;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #87CEEB;
+        }
+
+        .button {
+            padding: 5px 10px;
+            margin-left: 5px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .edit-button {
+            background-color: #ffa500;
+            color: white;
+        }
+
+        .delete-button {
+            background-color: #ff4500;
+            color: white;
+        }
+
+        .btn-dashboard {
+            background-color: #4CAF50; /* 綠色 */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <div class="logo">
+            <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0Ij48cGF0aCBkPSJNMjEuNSA2LjVjMC0uMzgtLjIxLS43MS0uNTUtLjg3bC04LTMuMzhhMS4wMSAxLjAxIDAgMCAwLS45IDBsLTggMy4zOGMtLjM0LjE2LS41NS40OS0uNTUuODd2MTFjMCAuMzguMjEuNzEuNTUuODdsOCAzLjM4Yy4xNS4wNi4zMi4xLjQ1LjFzLjMtLjA0LjQ1LS4xbDgtMy4zOGMuMzQtLjE2LjU1LS40OS41NS0uODd2LTExek0xMiA0LjE1TDE4LjY0IDdsLTYuNjQgMi44Mkw1LjM2IDdMMTIgNC4xNXpNMTEgMTkuNTJsLTYtMi41NXYtOC45N2w2IDIuNTR2OC45OHptMS0xMS41NEw1LjM2IDUuNDcgMTIgMi42NWw2LjY0IDIuODJMMTIgNy45OHptNyAxMS41NGwtNiAyLjU1di04Ljk3bDYtMi41NHY4Ljk2eiIvPjwvc3ZnPg==" alt="衣架圖標">
+            <h1>智慧晾衣網</h1>
+        </div>
+        <nav>
+            <a href="#" class="nav-link" data-page="dashboard"><i>🏠</i><span>控制面板</span></a>
+            <a href="#" class="nav-link" data-page="user-management"><i>👤</i><span>會員資料管理</span></a>
+            <a href="login.html" class="nav-link"><i>⚙️</i><span>登出</span></a>
+        </nav>
+    </div>
+    <button id="toggle-sidebar">☰</button>
+    <div id="user-name">使用者名稱</div>
+    <div id="content">
+        <main id="main-content">
+            <!-- 内容将在这里动态加载 -->
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username') || '使用者';
+            document.getElementById('user-name').textContent = `${username}，您好!`;
+
+            // 侧边栏切换功能
+            const toggleButton = document.getElementById('toggle-sidebar');
+            const sidebar = document.getElementById('sidebar');
+            const content = document.getElementById('content');
+
+            toggleButton.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+                content.style.marginLeft = sidebar.classList.contains('collapsed') ? '60px' : '250px';
+                toggleButton.style.left = sidebar.classList.contains('collapsed') ? '90px' : '270px';
+            });
+
+            // 导航功能
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.getAttribute('href') !== 'login.html') {
+                        e.preventDefault();
+                        const page = this.getAttribute('data-page');
+                        loadPage(page);
+                    }
+                });
+            });
+
+            // 默认加载控制面板
+            loadPage('dashboard');
+        });
+
+        function loadPage(page) {
+            const mainContent = document.getElementById('main-content');
+            mainContent.innerHTML = ''; // 清空当前内容
+
+            if (page === 'user-management') {
+                // 加载用户管理页面
+                fetch('get-users.php')
+                    .then(response => response.json())
+                    .then(data => {
+                        mainContent.innerHTML = '<h1 style="text-align: center;">會員資料管理</h1>';
+                        displayData(data);
+                    })
+                    .catch(error => {
+                        console.error('獲取資料時出錯:', error);
+                        mainContent.innerHTML = '<p>加載用戶數據時出錯。請稍後再試。</p>';
+                    });
+            } else if (page === 'dashboard') {
+                // 加载控制面板页面
+                mainContent.innerHTML = `
+                    <h2>歡迎來到控制面板</h2>
+                    <p>這裡是控制面板的內容。</p>
+                    <button class="btn-dashboard" onclick="window.location.href='dashboard.html'">前往使用者畫面</button>
+                `;
+            }
+        }
+
+        function displayData(data) {
+            const container = document.getElementById('main-content');
+            const table = document.createElement('table');
+
+            // 创建表头
+            const thead = document.createElement('thead');
+            const headerRow = document.createElement('tr');
+            const headers = ['ID', '使用者名稱', '帳號', '權限', '生日', '電話', '電子郵件', '操作'];
+
+            headers.forEach(header => {
+                const th = document.createElement('th');
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+
+            thead.appendChild(headerRow);
+            table.appendChild(thead);
+
+            // 创建表身
+            const tbody = document.createElement('tbody');
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.username || '無'}</td>
+                    <td>${item.account || '無'}</td>
+                    <td>${item.level || '無'}</td>
+                    <td>${item.birthday || '無'}</td>
+                    <td>${item.phone || '無'}</td>
+                    <td>${item.email || '無'}</td>
+                    <td>
+                        <button class="button edit-button" onclick="openModal('${item.username}', '${item.account}', '${item.level}', '${item.birthday || ''}', '${item.phone || ''}', '${item.email || ''}')">修改</button>
+                        <button class="button delete-button" onclick="confirmDelete('${item.username}')">刪除</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            table.appendChild(tbody);
+            container.appendChild(table);
+        }
+
+        function confirmDelete(username) {
+            if (confirm(`確定要刪除使用者: ${username} 嗎？`)) {
+                deleteUser(username);
+            }
+        }
+
+        function deleteUser(username) {
+            fetch(`delete-user.php`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `username=${encodeURIComponent(username)}` 
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('刪除失敗，請稍後再試。');
+                }
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(`使用者: ${username} 已刪除`);
+                    loadPage('user-management'); // 重新加载用户管理页面
+                } else {
+                    alert(data.message); 
+                }
+            })
+            .catch(error => {
+                console.error('刪除資料時出錯:', error);
+                alert('刪除失敗，請稍後再試。');
+            });
+        }
+
+        function openModal(username, account, level, birthday, phone, email) {
+            const params = new URLSearchParams({
+                username,
+                account,
+                level,
+                birthday,
+                phone,
+                email
+            }).toString();
+            window.location.href = `revise.html?${params}`; 
+        }
+    </script>
+</body>
+</html>
